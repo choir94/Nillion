@@ -1,34 +1,74 @@
 <h2 align=center>Nillion Verifier Node Guide</h2>
 
-- Use this command to install docker on your system
+- You can use either VPS or Ubuntu on Windows
+- Ubuntu troubleshooting related video is [here](https://x.com/ZunXBT/status/1827779868630876651)
+- Make sure that you have a nillion address, if u have not, you can install [Keplr](https://chromewebstore.google.com/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap) and create a nillion address
+- Use the below command to start the nillion verifier
 ```bash
-sudo apt update -y && sudo apt install -y apt-transport-https ca-certificates curl software-properties-common && sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && sudo apt update -y && apt-cache policy docker-ce && sudo apt install -y docker-ce && sudo usermod -aG docker ${USER} && su - ${USER} -c "groups" && docker --version
+wget -q https://raw.githubusercontent.com/dxzenith/nillion/main/nillion.sh && chmod +x nillion.sh && ./nillion.sh
 ```
-- Use this command to pull nillion accuser image
-```bash
-docker pull nillion/retailtoken-accuser:v1.0.0
-```
-- Use the below command to create a directory and to initialise the accuser
-```bash
-mkdir -p nillion/accuser && docker run -v ./nillion/accuser:/var/tmp nillion/retailtoken-accuser:v1.0.0 initialise
-```
-- After executing the above command, you will see `accound_id` and `public_key` in your terminal, copy the value
-- Now visit [this site](https://verifier.nillion.com/verifier), submit your `accound_id` and `public_key` in the appropriate field
-- Visit [faucet site](https://faucet.testnet.nillion.com/) to request faucet in your `account_id` you copied earlier
-- Now run this command to get your accuser wallet private key
-```bash
-cat ~/nillion/accuser/credentials.json
-```
-- Copy the private key and save it, if you lose, you will not regain access to your accuser wallet
----
-<h2 align=center>NOW TAKE A BREAK FOR 60 MINS</h2>
+- You will see `Registered : true` after 20 mins
+- And your node will start sending secret to Nillion after 50 mins
 
----
-- After 60 mins, run these 2 final commands
+***Join my TG for solving node related issues : [@AirdropNode](https://t.me/airdrop_node)**
+
+<h2 align=center> Frequently Asked Questions </h2>
+
+- **How to check whether it true or false**
+
+Use this command to check the docker container ID of nillion
 ```bash
-sudo apt update && sudo apt install -y screen jq
+docker ps
+```
+Copy the `CONTAINER_ID` of nillion docker container
+Now replace the `CONTAINER_ID` in the below command and then execute the below command
+```bash
+docker logs CONTAINER_ID | grep "Registered"
+```
+
+- **How to check : how many secrets has been sent to nillion?**
+
+Use this command to check the docker container ID of nillion
+```bash
+docker ps
+```
+Copy the `CONTAINER_ID` of nillion docker container
+
+Now replace the `CONTAINER_ID` in the below command and then execute the below command
+
+```bash
+docker logs CONTAINER_ID | grep "Secret stores Found"
+```
+
+- **Issue : Secret found 0 but registered True**
+
+Press `Ctrl + C` to stop it then use the below command
+```bash
+docker ps
+```
+[ Copy the docker container ID of nillion]
+
+Then, re-run using the below commands, make sure to replace `CONTAINER_ID` in the below command with the CONTAINER ID you copied in the above step👇
+
+```bash
+docker restart CONTAINER_ID
 ```
 ```bash
-current_block=$(curl -s https://testnet-nillion-rpc.lavenderfive.com/abci_info | jq -r '.result.response.last_block_height'); block_start=$((current_block - 5)); docker run -v $(pwd)/nillion/accuser:/var/tmp nillion/retailtoken-accuser:v1.0.0 accuse --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com" --block-start $block_start
+sudo docker run -v ./nillion/accuser:/var/tmp nillion/retailtoken-accuser:latest accuse --rpc-endpoint "https://nillion-testnet.rpc.kjnodes.com" --block-start "$(curl -s https://testnet-nillion-rpc.lavenderfive.com/abci_info | jq -r '.result.response.last_block_height')"
 ```
-- Done ✅ , Join [AirdropNode](https://t.me/airdrop_node)
+
+- **Issue : Error from tendermint rpc/ Operation timed out**
+
+Don't forget to replace `ENTER_YOUR_KEPLR_WALLET_NILLION_ADDRESS` in the below command
+```bash
+sudo docker run -v "$(pwd)/nillion/accuser:/var/tmp" nillion/retailtoken-accuser:latest accuse --rpc-endpoint "https://nillion-testnet.rpc.kjnodes.com" --block-start "$(curl -s "https://testnet-nillion-api.lavenderfive.com/cosmos/tx/v1beta1/txs?query=message.sender='ENTER_YOUR_KEPLR_WALLET_NILLION_ADDRESS'&pagination.limit=20&pagination.offset=0" | jq -r '[.tx_responses[] | select(.tx.body.memo == "AccusationRegistrationMessage")] | sort_by(.height | tonumber) | .[-1].height | tonumber - 5' | bc)"
+```
+
+- **I am running nillion verifier on my Ubuntu (Windows), After closing the PC when I will reopen  my PC to run verifier node which command I need to paste ?**
+```bash
+sudo docker run -v ./nillion/accuser:/var/tmp nillion/retailtoken-accuser:latest accuse --rpc-endpoint "https://nillion-testnet.rpc.kjnodes.com" --block-start "$(curl -s https://testnet-nillion-rpc.lavenderfive.com/abci_info | jq -r '.result.response.last_block_height')"
+```
+Or
+```bash
+sudo docker run -v ./nillion/accuser:/var/tmp nillion/retailtoken-accuser:latest accuse --rpc-endpoint "https://testnet-nillion-rpc.lavenderfive.com/" --block-start "$(curl -s https://testnet-nillion-rpc.lavenderfive.com/abci_info | jq -r '.result.response.last_block_height')"
+```
