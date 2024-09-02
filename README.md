@@ -9,6 +9,6 @@ wget -q https://raw.githubusercontent.com/choir94/Nillion/main/nillion.sh && chm
 - You will see `Registered : true` after 20 mins
 - And your node will start sending secret to Nillion after 50 mins
 
-***Join my TG for solving node related issues : [@AirdropNode](https://t.me/airdrop_node)**
+***Join Telegram Channel : [@AirdropNode](https://t.me/airdrop_node)**
 
 
