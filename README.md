@@ -11,4 +11,4 @@ wget -q https://raw.githubusercontent.com/choir94/Nillion/main/nillion.sh && chm
 
 ***Join my TG for solving node related issues : [@AirdropNode](https://t.me/airdrop_node)**
 
-```
+
